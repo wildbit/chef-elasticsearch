@@ -1,0 +1,67 @@
+################################### Cluster ###################################
+
+# cluster name identifies your cluster for auto-discovery
+cluster.name: <%= @cluster %>
+
+
+#################################### Node #####################################
+
+# node name provides a unique identifier for a node within a cluster
+node.name: <%= @name %>
+
+# allow node to be master
+node.master: <%= @type == 'data' ? false : true %>
+
+# allow node to store data
+node.data: <%= @type == 'client' ? false : true %>
+
+
+############################## HTTP ###########################################
+
+# expose APIs over HTTP
+http.enabled: true
+
+# HTTP bind port range
+http.port: <%= @http_port %>
+
+
+#################################### Memory ###################################
+
+# lock process address space in memory (no swapping)
+bootstrap.mlockall: true
+
+
+#################################### Network ##################################
+
+# Network address to bind to
+network.host: <%= @address %>
+
+
+#################################### Transport ################################
+transport.tcp.port: <%= @t_port %>
+
+
+#################################### Discovery ################################
+
+# enable/disable multicast
+discovery.zen.ping.multicast.enabled: <%= @multicast %>
+
+# unicast targets
+discovery.zen.ping.unicast.hosts: <%= @members[:active] %>
+
+
+<% if @marvel %>
+#################################### Marvel ###################################
+<% if @type == 'monitor' %>
+marvel.agent.enabled: false
+<% elsif @type.match(/(all|client|data|master)/) %>
+marvel.agent.exporter.es.hosts: <%= @members[:marvel] %>
+<% end -%>
+<% end -%>
+
+
+#################################### User Defined Modules ####################
+<% @modules.each do |name, value| -%>
+<%= name %>: <%= value %>
+<% end -%>
+

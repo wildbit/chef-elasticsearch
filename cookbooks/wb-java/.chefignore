@@ -1,0 +1,6 @@
+*~
+.DS_Store
+.git/*
+.kitchen/*
+*.sw[a-z]
+test/*

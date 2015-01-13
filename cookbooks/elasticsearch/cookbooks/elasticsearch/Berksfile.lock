@@ -1,0 +1,14 @@
+DEPENDENCIES
+  elasticsearch
+    path: .
+    metadata: true
+  wb-java
+    git: git@wb.git.beanstalkapp.com:/wb/chef-java.git
+    revision: 0f814d921e5c3a2dd427cfb2824ba327e209b036
+
+GRAPH
+  elasticsearch (0.1.0)
+    wb-java (>= 0.0.0)
+  java (1.29.0)
+  wb-java (0.1.0)
+    java (>= 0.0.0)
