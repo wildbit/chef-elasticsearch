@@ -8,7 +8,3 @@ Chef::Platform.set platform: :centos,     resource: :elasticsearch, provider: Ch
 Chef::Platform.set platform: :redhat,     resource: :elasticsearch, provider: Chef::Provider::Elasticsearch::Rhel
 Chef::Platform.set platform: :scientific, resource: :elasticsearch, provider: Chef::Provider::Elasticsearch::Rhel
 Chef::Platform.set platform: :smartos,    resource: :elasticsearch, provider: Chef::Provider::Elasticsearch::Smartos
-
-# XXX - test
-Chef::Platform.set platform: :mac_os_x, resource: :elasticsearch, provider: Chef::Provider::Elasticsearch::Smartos
-
