@@ -141,7 +141,7 @@ class Chef
           end
 
           # Define service
-          service "#{service_name}" do
+          service service_name do
             action   :nothing
             provider Chef::Provider::Service::Solaris
           end
@@ -204,7 +204,7 @@ class Chef
           end
 
           #  Ensure service starts
-          service "#{service_name}" do
+          service service_name do
             action   :start
             provider Chef::Provider::Service::Solaris
           end

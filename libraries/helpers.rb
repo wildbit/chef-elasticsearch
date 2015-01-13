@@ -35,7 +35,7 @@ module Opscode
         output = {}
 
         # Pay no mind to loopback devices
-        interfaces  = node.network.interfaces.keys.reject do |iface| 
+        interfaces  = node[:network][:interfaces].keys.reject do |iface|
           iface.match('^lo')
         end
 
@@ -53,6 +53,8 @@ module Opscode
       # @return [Array] Cluster members 
       # XXX - DRY this
       def members
+        return [] if Chef::Config[:solo]
+
         output = {}
         port   = transport_port
 
@@ -66,7 +68,7 @@ module Opscode
         output[:active] = response.reject do |member|
           member.elasticsearch.type == 'marvel' rescue []
         end.map! do |member|
-          addr = node.elasticsearch.address rescue node.ipaddress
+          addr = node[:elasticsearch][:address] rescue node[:ipaddress]
           "#{addr}:#{port}"
         end.join(',')
 
