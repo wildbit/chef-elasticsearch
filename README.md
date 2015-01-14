@@ -1,7 +1,6 @@
 #### Elasticsearch
 
-The Elasticsearch cookbook facilitates the installation and configuration of an Elasticsearch instance. 
-
+The Elasticsearch cookbook facilitates the installation and configuration of an Elasticsearch instance.
 
 ##### Requirements
 
@@ -18,8 +17,64 @@ The Elasticsearch cookbook facilitates the installation and configuration of an 
 * RHEL
 * SmartOS
 
+##### Resources & Providers
 
-##### Attributes
+This cookbook includes the following resources and respective providers:
+
+* elasticsearch
+* elasticsearch_plugin
+
+The ```elasticsearch``` resource/provider facilate the configuration and installation of Elasticsearch. Defaults are provided, however they may be overriden.
+
+* Set home directory
+ 
+```
+elasticsearch '1.4.2' do
+  home_dir '/opt/elasticsearch-1.4.2'
+end
+```
+
+* Set user & group
+
+```
+elasticsearch '1.4.2' do
+  user  'elastic'
+  group 'elastic'
+end
+```
+
+* Set logging directory
+
+```
+elasticsearch '1.4.2' do
+  log_dir '/opt/local/elasticsearch/logs'
+end
+```
+
+In addtion to ```elasticsearch```, ```elasticsearch_plugin``` is provided, facilitating plugin installation and removal.
+
+* Install Marvel plugin
+
+```
+elasticsearch_plugin 'elasticsearch/marvel/latest'
+```
+
+* Install latest Marvel plugin with different plugin executable
+
+```
+elasticsearch_plugin 'elasticsearch/marvel/latest' do
+  plugin_binary '/usr/local/elasticsearch/bin/plugin'
+end
+```
+
+* Install Marvel plugin with provided version
+
+```
+elasticsearch_plugin 'elasticsearch/marvel/0.1.0'
+```
+
+
+##### elasticsearch Attributes
 
 __Directories__
 
@@ -194,7 +249,9 @@ __User & Group__
 
 ##### Usage
 
-This cookbook conforms to the application/library convention, as a result it's recommended that this cookbook be augmented with a site-specific cookbook. However, should the defaults be acceptable the cookbook may be included in a node's run list.
+This cookbook conforms to the application/library convention, as a result it's recommended that this cookbook be augmented with a site-specific cookbook.
+
+However, should the defaults be acceptable to your environment simple include the recipe within the desired node's run list.
 
 ```
 $ knife node run_list add 'recipe[elasticsearch]'
