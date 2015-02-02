@@ -10,7 +10,7 @@ module Opscode
         interface = new_resource.interface || value_for_platform_family(rhel: 'eth1', smartos: 'net1')
         address   = interfaces[interface]
 
-        interfaces.keys.include?(interface) ? interfaces[interface] : '127.0.0.1'
+        interfaces.keys.include?(interface) ? interfaces[interface] : '0.0.0.0'
       end
 
       # Installation archive name
