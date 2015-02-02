@@ -12,16 +12,6 @@ class Chef
         true
       end
 
-      # Network address
-      # @return [String] Network address to bind to
-      def bind
-        set_or_return(
-          :bind,
-          arg,
-          kind_of: String
-        )
-      end
-
       # Interface to bind to for connections
       # @return [String] Interface to bind to
       def interface
