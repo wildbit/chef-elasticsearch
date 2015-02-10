@@ -104,6 +104,7 @@ class Chef
             group    'root'
             mode     '0644'
             source   'memlock.conf.erb'
+            cookbook 'elasticsearch_lwrp'
             backup   false
             variables(
               limit: max_locked_memory,
