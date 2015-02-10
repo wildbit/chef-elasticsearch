@@ -100,11 +100,12 @@ class Chef
 
           # Set user memory lock limit
           template "/etc/security/limits.d/99-#{service_name}.conf" do
-            owner  'root'
-            group  'root'
-            mode   '0644'
-            source 'memlock.conf.erb'
-            backup false
+            owner    'root'
+            group    'root'
+            mode     '0644'
+            source   'memlock.conf.erb'
+            cookbook new_resource.cookbook_name
+            backup   false
             variables(
               limit: max_locked_memory,
               user:  es_user
@@ -164,6 +165,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
+            cookbook new_resource.cookbook_name
             source   'service.options.erb'
             backup   false
             variables(
@@ -188,6 +190,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0755'
+            cookbook new_resource.cookbook_name
             source   "#{service_name}.service.erb"
             backup   false
             variables(
@@ -215,8 +218,9 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
-            backup   false
+            cookbook new_resource.cookbook_name
             source   'elasticsearch.yml.erb'
+            backup   false
             variables(
               address:   address,
               cluster:   cluster,
@@ -239,6 +243,7 @@ class Chef
             group    'root'
             mode     '0644'
             backup   false
+            cookbook new_resource.cookbook_name
             source   'logging.yml.erb'
             variables(
               log_file:  log_file,
