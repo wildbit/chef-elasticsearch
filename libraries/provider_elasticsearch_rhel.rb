@@ -239,12 +239,12 @@ class Chef
 
           # Create and populdate logging config file
           template log_config_file do
-            owner     'root'
-            group     'root'
-            mode      '0644'
-            cookobook 'elasticsearch_lwrp'
-            backup    false
-            source    'logging.yml.erb'
+            owner    'root'
+            group    'root'
+            mode     '0644'
+            cookbook 'elasticsearch_lwrp'
+            backup   false
+            source   'logging.yml.erb'
             variables(
               log_file:  log_file,
               log_level: log_level
