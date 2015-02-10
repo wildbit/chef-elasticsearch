@@ -79,11 +79,12 @@ class Chef
 
           # Set user memory mapped file limit
           template "/etc/sysctl.d/99-#{service_name}.conf" do
-            owner  'root'
-            group  'root'
-            mode   '0644'
-            source 'sysctl.conf.erb'
-            backup false
+            owner    'root'
+            group    'root'
+            mode     '0644'
+            source   'sysctl.conf.erb'
+            backup   false
+            cookbook new_resource.cookbook_name
             variables(
               key:   'vm.max_map_count',
               value: max_memory_map
