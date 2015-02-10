@@ -84,7 +84,7 @@ class Chef
             mode     '0644'
             source   'sysctl.conf.erb'
             backup   false
-            cookbook new_resource.cookbook_name
+            cookbook 'sysctl'
             variables(
               key:   'vm.max_map_count',
               value: max_memory_map
