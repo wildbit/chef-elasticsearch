@@ -10,16 +10,16 @@ cluster.name: <%= @cluster %>
 node.name: <%= @name %>
 
 # allow node to be master
-node.master: <%= @type == 'data' ? false : true %>
+node.master: <%= @type.match(/(data|marvel|master)/) ? true : false %>
 
 # allow node to store data
-node.data: <%= @type == 'client' ? false : true %>
+node.data: <%= @type.match(/(data|marvel|master)/) ? true : false %>
 
 
 ############################## HTTP ###########################################
 
 # expose APIs over HTTP
-http.enabled: true
+http.enabled: <%= @http %>
 
 # HTTP bind port range
 http.port: <%= @http_port %>
@@ -28,17 +28,17 @@ http.port: <%= @http_port %>
 #################################### Memory ###################################
 
 # lock process address space in memory (no swapping)
-bootstrap.mlockall: true
+bootstrap.mlockall: <%= @mlockall %>
 
 
 #################################### Network ##################################
 
 # Network address to bind to
-network.host: <%= @address %>
+network.host: <%= @host %>
 
 
 #################################### Transport ################################
-transport.tcp.port: <%= @t_port %>
+transport.tcp.port: <%= @transport_port %>
 
 
 #################################### Discovery ################################
@@ -47,14 +47,14 @@ transport.tcp.port: <%= @t_port %>
 discovery.zen.ping.multicast.enabled: <%= @multicast %>
 
 # unicast targets
-discovery.zen.ping.unicast.hosts: <%= @members[:active] %>
+discovery.zen.ping.unicast.hosts: <%= @members[:data] %>
 
 
 <% if @marvel %>
 #################################### Marvel ###################################
 <% if @type == 'monitor' %>
 marvel.agent.enabled: false
-<% elsif @type.match(/(all|client|data|master)/) %>
+<% elsif @type.match(/(all|client|data|master)/) && ! @members[:marvel].empty? %>
 marvel.agent.exporter.es.hosts: <%= @members[:marvel] %>
 <% end -%>
 <% end -%>
