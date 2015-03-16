@@ -5,234 +5,282 @@ class Chef
     class Elasticsearch < Chef::Resource
       def initialize(name, run_context = nil)
         super
-        @action          = :create
-        @allowed_actions = [:create, :delete]
+        @action          = :install
+        @allowed_actions = [:install, :remove]
         @resource_name   = :elasticsearch
       end
 
-      # Cluster name
+      def checksum(arg = nil)
+        set_or_return(
+          :checksum,
+          arg,
+          default: lazy { node[:elasticsearch][:checksum] }
+        )
+      end
+
       def cluster(arg = nil)
         set_or_return(
           :cluster,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:cluster] }
         )
       end
 
-      # Data directory
+      def config_file(arg = nil)
+        set_or_return(
+          :config_file,
+          arg,
+          default: lazy { node[:elasticsearch][:file][:config] }
+        )
+      end
+
       def data_dir(arg = nil)
         set_or_return(
           :data_dir,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:dir][:data] }
         )
       end
 
-      # Home directory
       def home_dir(arg = nil)
         set_or_return(
           :home_dir,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:dir][:home] }
         )
       end
 
-      # Logging directory
+      def http(arg = nil)
+        set_or_return(
+          :http,
+          arg,
+          default: lazy { node[:elasticsearch][:http] }
+        )
+      end
+
+      def java_heap(arg = nil)
+        set_or_return(
+          :java_heap,
+          arg,
+          default: nil,
+          kind_of: [Fixnum, String]
+        )
+      end
+
+      def java_home(arg = nil)
+        set_or_return(
+          :java_home,
+          arg,
+          default: lazy { node[:elasticsearch][:java][:home] }
+        )
+      end
+
+      def java_stack(arg = nil)
+        set_or_return(
+          :java_stack,
+          arg,
+          default: lazy { node[:elasticsearch][:java][:stack] }
+        )
+      end
+
+      def java_version(arg = nil)
+        set_or_return(
+          :java_version,
+          arg,
+          default: lazy { node[:elasticsearch][:java][:version] }
+        )
+      end
+
+      def log_config(arg = nil)
+        set_or_return(
+          :log_config,
+          arg,
+          default: lazy  { node[:elasticsearch][:log][:config] }
+        )
+      end
+
       def log_dir(arg = nil)
         set_or_return(
           :log_dir,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:dir][:log] }
         )
       end
 
-      # Working directory
+      def log_file(arg = nil)
+        set_or_return(
+          :log_file,
+          arg,
+          default: lazy { node[:elasticsearch][:log][:file] }
+        )
+      end
+
       def work_dir(arg = nil)
         set_or_return(
           :work_dir,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:dir][:work] }
         )
       end
 
-      # HTTP port (API)
       def http_port(arg = nil)
         set_or_return(
           :http_port,
           arg,
-          kind_of: [Fixnum, String]
+          default: lazy { node[:elasticsearch][:port][:http] }
         )
       end
 
-      def interface(arg = nil)
+      def listen(arg = nil)
         set_or_return(
-          :interface,
+          :listen,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:listen] }
         )
       end
 
-      # Log verbosity
       def log_level(arg = nil)
         set_or_return(
           :log_level,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:log][:level] }
         )
       end
 
-      # Enable/disable Marvel agent 
       def marvel(arg = nil)
         set_or_return(
           :marvel,
           arg,
-          kind_of: [FalseClass, NilClass, TrueClass]
+          default: lazy { node[:elasticsearch][:marvel] }
         )
       end
 
-      # Maximum amount of locked memory
-      def max_locked_memory(arg = nil)
-        set_or_return(
-          :max_locked_memory,
-          arg,
-          kind_of: String
-        )
-      end
-
-      # Maximum memory mapped files
-      def max_memory_map(arg = nil)
-        set_or_return(
-          :max_memory_map,
-          arg,
-          kind_of: [Fixnum, String]
-        )
-      end
-
-      # Maximum allowed open files 
-      def max_open_files(arg = nil)
-        set_or_return(
-          :max_open_files,
-          arg,
-          kind_of: String
-        )
-      end
-
-      # Cluster members
       def members(arg = nil)
         set_or_return(
           :members,
           arg,
-          kind_of: [Array, String],
+          kind_of: [Array, String]
         )
       end
 
-      # Modules
+      def mlockall(arg = nil)
+        set_or_return(
+          :mlockall,
+          arg,
+          default: lazy { node[:elasticsearch][:mlockall] }
+        )
+      end
+
       def modules(arg = nil)
         set_or_return(
           :modules,
           arg,
-          default: {},
-          kind_of: Hash
+          default: lazy { node[:elasticsearch][:modules] }
         )
       end
 
-      # Enable/disable multicast discovery
       def multicast(arg = nil)
         set_or_return(
           :multicast,
           arg,
-          kind_of: [FalseClass, NilClass, TrueClass]
+          default: lazy { node[:elasticsearch][:multicast] }
         )
       end
 
-      # User shell
-      def shell(arg = nil)
+      def pid_file(arg = nil)
         set_or_return(
-          :shell,
+          :pid_file,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:file][:pid] }
         )
       end
 
-      # Service name
+      def resources(arg = nil)
+        set_or_return(
+          :resources,
+          arg,
+          default: lazy { node[:elasticsearch][:resources] }
+        )
+      end
+
       def service_name(arg = nil)
         set_or_return(
           :service_name,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:service] }
         )
       end
 
-      # Transport port
+      def source(arg = nil)
+        set_or_return(
+          :source,
+          arg,
+          default: lazy { node[:elasticsearch][:source] }
+        )
+      end
+
       def transport_port(arg = nil)
         set_or_return(
           :transport_port,
           arg,
-          kind_of: [Fixnum, String]
+          default: lazy { node[:elasticsearch][:port][:transport] }
         )
       end
 
-      # Member type
       def type(arg = nil)
         set_or_return(
           :type,
           arg,
-          equal_to: %w(client data master marvel)
+          default: lazy { node[:elasticsearch][:type] }
         )
       end
 
-      # Enable/disable unicast discovery
       def unicast(arg = nil)
         set_or_return(
           :unicast,
           arg,
-          kind_of: [FalseClass,NilClass,TrueClass]
+          default: lazy { node[:elasticsearch][:unicast] }
         )
       end
 
-      # User process runs as
       def user(arg = nil)
         set_or_return(
           :user,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:user][:name] }
         )
       end
 
-      # Group process runs as
       def group(arg = nil)
         set_or_return(
           :group,
            arg,
-           kind_of: String
+           default: lazy { node[:elasticsearch][:group][:name] }
         )
       end
 
-      # UID of user
       def uid(arg = nil)
         set_or_return(
           :uid,
            arg,
-           kind_of: [Fixnum, String]
+           default: lazy { node[:elasticsearch][:user][:uid] }
         )
       end
 
-      # GID of group
       def gid(arg = nil)
         set_or_return(
           :gid,
           arg,
-          kind_of: String
+          default: lazy { node[:elasticsearch][:group][:gid] }
         )
       end
 
-      # Version managed
       def version(arg = nil)
         set_or_return(
           :version,
           arg,
           kind_of:        [Fixnum, Float, String],
-          name_attribute: true            
+          name_attribute: true
         )
       end
     end
