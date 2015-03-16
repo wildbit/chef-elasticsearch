@@ -17,4 +17,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-elasticsearch '1.4.4'
+elasticsearch node[:elasticsearch][:version]
