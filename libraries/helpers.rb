@@ -1,197 +1,109 @@
-module Opscode
-  module Elasticsearch
-    module Helpers
-      include Chef::DSL::DataQuery
-      include Chef::Mixin::ShellOut
+require 'chef/search/query'
 
-      # IP address to bind to
-      # @return [String]
-      def address
-        interface = new_resource.interface || value_for_platform_family(rhel: 'eth1', smartos: 'net1')
-        address   = interfaces[interface]
+module Elasticsearch
+  module Helpers
+    # Returns a Hash of cluster members
+    # @returns [Array] Hash of cluster members, keyed by type.
+    def cluster_members
+      return [] if Chef::Config[:solo]
+      output = {}
+      port   = current.transport_port
+      query  = Chef::Search::Query.new
 
-        interfaces.keys.include?(interface) ? interfaces[interface] : '0.0.0.0'
+      crit   = "chef_environment:#{node.chef_environment} AND elasticsearch_cluster:#{current.cluster}"
+      result = query.search(:node, crit).first
+
+      # Marvel members
+      output[:marvel] = result.select do |member|
+        member[:elasticsearch][:type] == 'marvel'
       end
 
-      # Installation archive name
-      # @return [String] Installation archive
-      def installer
-        "elasticsearch-#{version}.tar.gz"
+      # Data members
+      output[:data] = result.select do |member|
+        member[:elasticsearch][:type] == 'data'
       end
 
-      # Installation archive source
-      # @return [String] Installation archive source
-      def installer_source
-        "https://download.elasticsearch.org/elasticsearch/elasticsearch/#{installer}"
-      end
+      output[:data].map!   { |member| "#{member[:ipaddress]}:#{port}" }.sort!
+      output[:marvel].map! { |member| "#{member[:ipaddress]}:#{port}" }.sort!
 
-      # Installation archive local path
-      # @return [String] Installation archive location
-      def installer_target
-        File.join(Chef::Config[:file_cache_path], installer)
-      end
+      output
+    end
 
-      def interfaces
-        output = {}
+    # Decompress installation archive
+    # @return [String] Command used to extract installation
+    def cmd_decompress
+      "tar -C #{current.home_dir} -xf #{installer_target} --strip-components 1"
+    end
 
-        # Pay no mind to loopback devices
-        interfaces  = node[:network][:interfaces].keys.reject do |iface|
-          iface.match('^lo')
-        end
-
-        # Map interface to address
-        interfaces.each do |iface|
-          addr = node[:network][:interfaces][iface].addresses.keys.select do |addr|
-            addr.match('^(\d{1,3}\.?){4}$')
-          end
-          output[iface] = addr.first
-        end
-        output
-      end
-
-      # Collection of cluster members
-      # @return [Array] Cluster members 
-      # XXX - DRY this
-      def members
-        return [] if Chef::Config[:solo]
-
-        output = {}
-        port   = transport_port
-
-        query = ["elasticsearch_cluster:#{cluster}"]
-        query << "chef_environment:#{node.chef_environment}"
-        query = query.join(' AND ')
-
-        response = search(:node, query)
-
-        # Discover all non-marvel cluster members
-        output[:active] = response.reject do |member|
-          member.elasticsearch.type == 'marvel' rescue []
-        end.map! do |member|
-          addr = node[:elasticsearch][:address] rescue node[:ipaddress]
-          "#{addr}:#{port}"
-        end.join(',')
-
-        # Discovery marvel cluster member(s)
-        output[:marvel] = response.select do |member|
-          member.elasticsearch.type == 'marvel' rescue []
-        end.map! { |mem| "#{mem.elasticsearch.address}:#{port}" }.join(',')
-
-        output
-      end
-
-      # Configuration file
-      # @return [String] Location of config file
-      def config_file
-        File.join(config_dir, 'elasticsearch.yml')
-      end
-
-      # Logging configuration file
-      # @return [String] Log configuration file
-      def log_config_file
-        File.join(config_dir, 'logging.yml')
-      end
-      
-      # Log output file
-      # @return [String] Logging output file
-      def log_file
-        File.join(log_dir, 'elasticsearch.log')
-      end
-
-      # PID file
-      # @return [String] PID file
-      def pid_file
-        File.join(pid_dir, 'elasticsearch.pid')
-      end
-
-      # Command used to extract source archive
-      # @return [String] Source extraction command
-      def cmd_decompress
-        "tar -C #{home_dir} -xf #{installer_target} --strip-components 1"
-      end
-
-      # Command used to update install file permissions
-      # @return [String] Installation file permissions command
-      def cmd_permissions
-        "chown -R #{es_user}:#{es_group} #{home_dir}"
-      end
+    # Recusively set installation permissions
+    # @return [String] Command used to set install permissions
+    def cmd_permissions
+      "chown -R #{current.user}:#{current.group} #{current.home_dir}"
+    end
 
       def cmd_reload_sysctl
         {
-          command: "/sbin/sysctl -p /etc/sysctl.d/99-#{service_name}.conf",
+          command: "/sbin/sysctl -p /etc/sysctl.d/99-#{current.service_name}.conf",
           expects: [0, 255],
-          guard:   "[ $(/sbin/sysctl -n vm.max_map_count) == #{max_memory_map} ]"
+          guard:   "[ $(/sbin/sysctl -n vm.max_map_count) == #{current.resources.memory.map} ]"
         }
       end
 
-      def manifest_exists?
-        response = shell_out("svcs -l elasticsearch")
-        response.exitstatus > 0 ? false : true
+
+    # Returns the size allocated for heap
+    # @return [Fixum] Heap size allocated in megabytes
+    def java_heap_size
+      return current.java_heap if current.java_heap
+
+      case node[:platform_family]
+        when 'rhel'    then (0.5 * node[:memory][:total].to_f).to_i / 1024
+        when 'smartos' then (0.5 * node[:memory][:total].to_f).to_i
       end
+    end
 
-      # Command & conditional to delete SMF manifest
-      def manifest_delete
-        "/usr/sbin/svccfg delete -f #{service_name}"
+    # Returns Java home directory
+    # @return [String] Java home directory
+    def java_home
+      case node[:platform_family]
+        when 'rhel'    then '/usr'
+        when 'smartos' then '/opt/local'
       end
+    end
 
-      # Command & conditional to import SMF manifest
-      def manifest_import
-         "/usr/sbin/svccfg import #{service_file}"
+    # Returns distribution specific Java package name
+    # @return [String] Java package name
+    def java_package
+      version = current.java_version
+
+      case node[:platform_family]
+        when 'rhel'    then "java-#{version}-openjdk-headless"
+        when 'smartos' then "openjdk#{version.split('.')[1]}-#{version}"
       end
+    end
 
-      def jvm_stack_size
-        '256k'
-      end
+    # Provides path to installation archive
+    # @returns [String] Absolute path to installation archive
+    def installer_target
+      return current.source unless current.source.match('^http')
 
-      # Set node attribute for address
-      # XXX - DRY
-      def set_cluster_address
-        current_address = node[:elasticsearch][:address] rescue nil
-        
-        if (current_address.nil? || current_address != address)
-          node.normal[:elasticsearch][:address] = address
-          node.save
-        end
-        true
-      end
+      directory = Chef::Config[:file_cache_path]
+      filename  = ::File.basename(current.source)
 
-      # Set node attribute for cluster name
-      # XXX - DRY
-      def set_cluster_name
-        current_name = node[:elasticsearch][:cluster] rescue nil
-        
-        if (current_name.nil? || current_name != cluster)
-          node.normal[:elasticsearch][:cluster] = cluster
-          node.save
-        end
-        true
-      end
+      ::File.join(directory, filename)
+    end
 
-      # Set node attribute for cluster type
-      # XXX - DRY 
-      def set_cluster_type
-        current_type = node[:elasticsearch][:type] rescue nil
-        
-        if (current_type.nil? || current_type != type)
-          node.normal[:elasticsearch][:type] = type
-          node.save
-        end
-        true
-      end
+    # Returns the absolute path to the service file
+    # @return [String] Path to service definition
+    def service_file
+      case node[:platform_family]
+      when 'rhel'
+        release  = node[:platform_version].to_i
+        systemd  = '/etc/systemd/system/elasticsearch.service'
+        sysvinit = '/etc/rc.d/init.d/elasticsearch'
 
-      # Port accepting inter-member connections. 
-      # @return [String] Transport port
-      def transport_port
-        port = new_resource.transport_port || '9300-9400'
-        port = port.to_s
-
-        port.match('^\d+-\d+$') ? port.split('-').first : port
-      end
-
-      # Version of Elasticsearch to manage
-      # @return [String] Elasticsearch version
-      def version
-        new_resource.version || '1.4.2'
+        release >= 7 ? systemd : sysvinit
+      when 'smartos'
+        ::File.join(Chef::Config[:file_cache_path], 'elasticsearch')
       end
     end
   end
