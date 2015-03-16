@@ -17,19 +17,19 @@
       <method_credential group='<%= @group %>' user='<%= @user %>'/>
       <method_environment>
         <envvar name='PATH' value='/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin'/>
-        <envvar name='JAVA_HOME' value='/opt/local/java/openjdk7'/>
+        <envvar name='JAVA_HOME' value='<%= @java_home %>'/>
       </method_environment>
     </method_context>
-    <exec_method name='start' type='method' exec='/opt/local/java/openjdk7/bin/java -Delasticsearch -Des.index.store.type=%{store_type} -Des.pidfile=%{pid_file} -Des.config=%{config_file} -Des.path.data=<%= @data_dir%> -Des.path.log=<%= @log_dir%> -Des.path.home=<%= @home_dir %> %{java_opts} -Xms%{min_heap} -Xmx%{max_heap} -cp %{class_path} org.elasticsearch.bootstrap.Elasticsearch' timeout_seconds='3600'/>
+    <exec_method name='start' type='method' exec='<%= @java_home %>/bin/java -Delasticsearch -Des.index.store.type=%{store_type} -Des.pidfile=%{pid_file} -Des.config=%{config_file} -Des.path.data=<%= @data_dir%> -Des.path.log=<%= @log_dir%> -Des.path.home=<%= @home_dir %> %{java_opts} -Xms%{min_heap} -Xmx%{max_heap} -cp %{class_path} org.elasticsearch.bootstrap.Elasticsearch' timeout_seconds='3600'/>
     <exec_method name='stop' type='method' exec=':kill' timeout_seconds='60'/>
     <exec_method name='refresh' type='method' exec=':kill -HUP' timeout_seconds='60'/>
     <property_group name='application' type='application'>
       <propval name='class_path' type='astring' value='<%= @jar_file %>:<%= @class_dir %>/*:<%= @class_dir %>/sigar/*.jar'/>
       <propval name='config_file' type='astring' value='<%= @config_file %>'/>
-      <propval name='java_opts' type='astring' value='-Djava.awt.headless=true -Xss<%= @jvm_stack %> -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:CMSInitiatingOccupancyFraction=75'/>
-      <propval name='max_heap' type='astring' value='<%= @jvm_heap %>m'/>
-      <propval name='min_heap' type='astring' value='<%= @jvm_heap %>m'/>
-      <propval name='pid_file' type='astring' value='<%= @pid_file %>'/>
+      <propval name='java_opts' type='astring' value='-Djava.awt.headless=true -Xss<%= @java_stack %> -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:CMSInitiatingOccupancyFraction=75'/>
+      <propval name='max_heap' type='astring' value='<%= @java_heap %>m'/>
+      <propval name='min_heap' type='astring' value='<%= @java_heap %>m'/>
+      <propval name='pid_file' type='astring' value='<%= @pid %>'/>
       <propval name='store_type' type='astring' value='niofs'/>
     </property_group>
     <property_group name='startd' type='framework'>
