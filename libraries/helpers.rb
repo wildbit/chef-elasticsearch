@@ -96,7 +96,7 @@ module Elasticsearch
     # Returns a boolean describing the manifest state
     # @return [FalseClass, TrueClass] Manifest state
     def manifest_exists?
-      response = shell_out("svcs -l elasticsearch")
+      response = shell_out("/usr/sbin/svcs -l elasticsearch")
       response.exitstatus > 0 ? false : true
     end
 
