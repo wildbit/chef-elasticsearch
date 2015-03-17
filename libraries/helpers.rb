@@ -107,7 +107,7 @@ module Elasticsearch
 
     # Command used to import service manifest
     def manifest_import
-      "/usr/sbin/svccfg import #{current.service_file}"
+      "/usr/sbin/svccfg import #{service_file}"
     end
 
     # Returns the absolute path to the service file
