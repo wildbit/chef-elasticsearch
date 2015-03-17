@@ -1,6 +1,4 @@
-require          'chef/provider'
-require          'chef/dsl/recipe'
-require_relative 'helpers'
+require_relative 'provider_elasticsearch'
 
 class Chef
   class Provider
@@ -10,16 +8,13 @@ class Chef
       include ::Chef::DSL::Recipe
       include ::Elasticsearch::Helpers
 
-      def shared_actions
-        # Install Java
+      def action_install
         package java_package
 
-        # Create group
         group current.group do
           gid current.gid
         end
 
-        # Create user
         user current.user do
           group   current.group
           gid     current.group
@@ -28,7 +23,6 @@ class Chef
           shell   '/usr/bin/false'
         end
 
-        # Create required directories
         %w(data_dir home_dir log_dir work_dir).each do |dir|
           dir = current.send(dir.to_sym)
 
@@ -40,7 +34,6 @@ class Chef
           end
         end
 
-        # Fetch installation archive
         remote_file installer_target do
           owner    'root'
           group    'root'
@@ -51,20 +44,17 @@ class Chef
           notifies :run, 'execute[decompress]', :immediately
         end
 
-        # Decompress installation archive
         execute 'decompress' do
           action   :nothing
           command  cmd_decompress
           notifies :run, 'execute[permissions]', :immediately
         end
 
-        # Set installation permissions
         execute 'permissions' do
           action :nothing
           command cmd_permissions
         end
 
-        # Create configuration directory
         directory ::File.dirname(current.config_file) do
           owner     'root'
           group     'root'
@@ -72,7 +62,6 @@ class Chef
           recursive true
         end
 
-        # Create & populate configuration file
         template current.config_file do
           owner    'root'
           group    'root'
@@ -96,7 +85,6 @@ class Chef
           )
         end
 
-        # Log configuration
         template current.log_config do
           owner    current.user
           group    current.group
@@ -109,7 +97,6 @@ class Chef
           )
         end
 
-        # PID file directory
         directory ::File.dirname(current.pid_file) do
           owner    current.user
           group    current.group
@@ -117,7 +104,7 @@ class Chef
           recursive true
         end
 
-        # Install Marvel monitoring plugin
+        # Marvel plugin
         elasticsearch_plugin 'elasticsearch/marvel/latest' do
           plugin_binary ::File.join(current.home_dir, 'bin/plugin')
           only_if       { current.marvel }

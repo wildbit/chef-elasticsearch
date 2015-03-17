@@ -17,10 +17,9 @@ class Chef
         end
 
         def action_install
-          # Use common resources
-          shared_actions
+          super
           
-          # Create SmartOS project
+          # SmartOS resource management project
           resource_control_project 'elastic' do
             comment        'Elasticsearch Service'
             users          current.user
@@ -30,12 +29,12 @@ class Chef
             }
           end
 
-          # Create SMF manifest
+          # SMF manifest
           template  service_file do
             owner    'root'
             group    'root'
             mode     '0644'
-            source   "#{service_name}.service.erb"
+            source   'service.erb'
             backup   false
             variables(
               class_dir:    class_dir,
@@ -56,7 +55,6 @@ class Chef
             notifies :run,  'execute[import_manifest]', :immediately
           end
 
-          # Delete SMF manifest with update
           execute 'delete_manifest' do
             action  :nothing
             command manifest_delete
@@ -64,14 +62,12 @@ class Chef
             returns [0,1]
           end
 
-          # Import SMF manifest with update
           execute 'import_manifest' do
             action   :nothing
             command  manifest_import
             notifies :restart, "service[#{service_name}]"
           end
 
-          # 
           service current.service_name do
             action   :start
             supports restart: true

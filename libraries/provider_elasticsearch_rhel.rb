@@ -11,8 +11,7 @@ class Chef
         end
 
         def action_install
-          # Use common resources
-          shared_actions
+          super
 
           # Create kernel options include directory
           directory '/etc/sysctl.d' do
