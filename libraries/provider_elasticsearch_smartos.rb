@@ -13,7 +13,7 @@ class Chef
         # JAR file location
         # @return [String] Elasticsearch JAR
         def jar_file
-          ::File.join(current.home_dir, "lib/elasticsearch-#{version}.jar")
+          ::File.join(current.home_dir, "lib/elasticsearch-#{current.version}.jar")
         end
 
         def action_install

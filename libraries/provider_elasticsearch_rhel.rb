@@ -13,14 +13,12 @@ class Chef
         def action_install
           super
 
-          # Create kernel options include directory
           directory '/etc/sysctl.d' do
             owner 'root'
             group 'root'
             mode  '0755'
           end
 
-          # Set user memory mapped file limit
           template "/etc/sysctl.d/99-#{current.service_name}.conf" do
             owner    'root'
             group    'root'
@@ -34,14 +32,12 @@ class Chef
             notifies :restart, "service[#{current.service_name}]"
           end
 
-          # Load kernel options
           execute 'reload_sysctl' do
             command cmd_reload_sysctl[:command]
             not_if  cmd_reload_sysctl[:guard]
             returns cmd_reload_sysctl[:expects]
           end
 
-          # Set user memory lock limit
           template "/etc/security/limits.d/99-#{current.service_name}.conf" do
             owner    'root'
             group    'root'
@@ -56,7 +52,6 @@ class Chef
             notifies :restart, "service[#{current.service_name}]"
           end
 
-          # Create & populate service options file
           template ::File.join('/etc/sysconfig', current.service_name) do
             owner    'root'
             group    'root'
@@ -81,7 +76,6 @@ class Chef
             notifies :restart, "service[#{current.service_name}]"
           end
 
-          # Create service defintion
           template service_file do
             owner     'root'
             group     'root'
