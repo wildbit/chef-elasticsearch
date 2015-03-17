@@ -41,14 +41,15 @@ module Elasticsearch
       "chown -R #{current.user}:#{current.group} #{current.home_dir}"
     end
 
-      def cmd_reload_sysctl
-        {
-          command: "/sbin/sysctl -p /etc/sysctl.d/99-#{current.service_name}.conf",
-          expects: [0, 255],
-          guard:   "[ $(/sbin/sysctl -n vm.max_map_count) == #{current.resources.memory.map} ]"
-        }
-      end
-
+    # Hash keyed with resource parameters.
+    # @return [Hash] Hash providing necessary command, guard & expected return value.
+    def cmd_reload_sysctl
+      {
+        command: "/sbin/sysctl -p /etc/sysctl.d/99-#{current.service_name}.conf",
+        expects: [0, 255],
+        guard:   "[ $(/sbin/sysctl -n vm.max_map_count) == #{current.resources.memory.map} ]"
+      }
+    end
 
     # Returns the size allocated for heap
     # @return [Fixum] Heap size allocated in megabytes
@@ -90,6 +91,23 @@ module Elasticsearch
       filename  = ::File.basename(current.source)
 
       ::File.join(directory, filename)
+    end
+
+    # Returns a boolean describing the manifest state
+    # @return [FalseClass, TrueClass] Manifest state
+    def manifest_exists?
+      response = shell_out("svcs -l elasticsearch")
+      response.exitstatus > 0 ? false : true
+    end
+
+    # Command used to delete service manifest
+    def manifest_delete
+      "/usr/sbin/svccfg delete -f #{service_name}"
+    end
+
+    # Command used to import service manifest
+    def manifest_import
+      "/usr/sbin/svccfg import #{service_file}"
     end
 
     # Returns the absolute path to the service file
