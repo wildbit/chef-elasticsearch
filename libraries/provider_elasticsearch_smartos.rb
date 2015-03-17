@@ -65,7 +65,7 @@ class Chef
           execute 'import_manifest' do
             action   :nothing
             command  manifest_import
-            notifies :restart, "service[#{service_name}]"
+            notifies :restart, "service[#{current.service_name}]"
           end
 
           service current.service_name do
