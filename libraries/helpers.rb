@@ -102,12 +102,12 @@ module Elasticsearch
 
     # Command used to delete service manifest
     def manifest_delete
-      "/usr/sbin/svccfg delete -f #{service_name}"
+      "/usr/sbin/svccfg delete -f #{current.service_name}"
     end
 
     # Command used to import service manifest
     def manifest_import
-      "/usr/sbin/svccfg import #{service_file}"
+      "/usr/sbin/svccfg import #{current.service_file}"
     end
 
     # Returns the absolute path to the service file
