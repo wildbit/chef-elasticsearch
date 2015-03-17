@@ -49,7 +49,7 @@ class Chef
               group:        current.group,
               java_heap:    java_heap_size,
               java_home:    java_home,
-              java_stack:   current.java[:stack]
+              java_stack:   current.java_stack
             )
             notifies :run,  'execute[delete_manifest]', :immediately
             notifies :run,  'execute[import_manifest]', :immediately
