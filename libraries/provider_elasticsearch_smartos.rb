@@ -16,7 +16,7 @@ class Chef
           ::File.join(home_dir, "lib/elasticsearch-#{version}.jar")
         end
 
-        def action_create
+        def action_install
           # Use common resources
           shared_actions
           
@@ -49,7 +49,7 @@ class Chef
               user:         current.user,
               group:        current.group,
               java_heap:    java_heap_size,
-              java_home:    java_home
+              java_home:    java_home,
               java_stack:   current.java[:stack]
             )
             notifies :run,  'execute[delete_manifest]', :immediately
