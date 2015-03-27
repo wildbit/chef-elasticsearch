@@ -27,6 +27,7 @@ class Chef
               'deny'  => true,
               'value' => current.resources[:files][:open]
             }
+            notifies :restart, "service[#{node[:elasticsearch][:service]}]"
           end
 
           # SMF manifest
@@ -51,8 +52,9 @@ class Chef
               java_home:    java_home,
               java_stack:   current.java_stack
             )
-            notifies :run,  'execute[delete_manifest]', :immediately
-            notifies :run,  'execute[import_manifest]', :immediately
+            notifies :run,     'execute[delete_manifest]', :immediately
+            notifies :run,     'execute[import_manifest]', :immediately
+            notifies :restart, "service[#{node[:elasticsearch][:service]}]"
           end
 
           execute 'delete_manifest' do
