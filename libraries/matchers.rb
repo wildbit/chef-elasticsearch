@@ -1,9 +1,9 @@
 if defined?(ChefSpec)
-  def create_elasticsearch(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:elasticsearch, :create, resource_name)
+  def install_elasticsearch(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:elasticsearch, :install, resource_name)
   end
 
-  def delete_elasticsearch(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:elasticsearch, :delete, resource_name)
+  def remove_elasticsearch(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:elasticsearch, :remove, resource_name)
   end
 end
