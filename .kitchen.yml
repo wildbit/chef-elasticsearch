@@ -15,3 +15,5 @@ suites:
     run_list:
       - recipe[elasticsearch_lwrp::default]
     attributes:
+      elasticsearch:
+        interface: 'eth0'

@@ -131,11 +131,11 @@ class Chef
         )
       end
 
-      def listen(arg = nil)
+      def interface(arg = nil)
         set_or_return(
-          :listen,
+          :interface,
           arg,
-          default: lazy { node[:elasticsearch][:listen] }
+          default: lazy { node[:elasticsearch][:interface] }
         )
       end
 
@@ -193,6 +193,14 @@ class Chef
           arg,
           default: lazy { node[:elasticsearch][:file][:pid] }
         )
+      end
+
+      def plugin_dir(arg = nil)
+        set_or_return(
+          :plugin_dir,
+          arg,
+          default: lazy { node[:elasticsearch][:dir][:plugin] }
+        )              
       end
 
       def resources(arg = nil)
