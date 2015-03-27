@@ -25,7 +25,7 @@
     <exec_method name='refresh' type='method' exec=':kill -HUP' timeout_seconds='60'/>
     <property_group name='application' type='application'>
       <propval name='class_path' type='astring' value='<%= @jar_file %>:<%= @class_dir %>/*:<%= @class_dir %>/sigar/*.jar'/>
-      <propval name='config_file' type='astring' value='<%= @config_file %>'/>
+      <propval name='config_file' type='astring' value='<%= @config %>'/>
       <propval name='java_opts' type='astring' value='-Djava.awt.headless=true -Xss<%= @java_stack %> -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:CMSInitiatingOccupancyFraction=75'/>
       <propval name='max_heap' type='astring' value='<%= @java_heap %>m'/>
       <propval name='min_heap' type='astring' value='<%= @java_heap %>m'/>
