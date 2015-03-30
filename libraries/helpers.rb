@@ -3,13 +3,13 @@ require 'chef/search/query'
 module Elasticsearch
   module Helpers
     def members
-      return new_resource.members if new_resource.members
+      return new_resource.members if !new_resource.members.nil?
 
       output = {}
       query  = "chef_environment:#{node.chef_environment} AND elasticsearch_cluster:#{current.cluster}"
       all    = ::Chef::Search::Query.new.search(:node, query).first
 
-      %w(client data master marvel).each do |type|
+      %w(all client data master marvel).each do |type|
         output[type.to_sym] = all.select do |member|
           member[:elasticsearch][:type].match(/type/i)
         end
