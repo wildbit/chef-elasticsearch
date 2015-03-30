@@ -1,3 +1,4 @@
+require          'chef/mixin/shell_out'
 require_relative 'provider_elasticsearch'
 
 class Chef
@@ -6,6 +7,7 @@ class Chef
       attr_reader :current
 
       include ::Chef::DSL::Recipe
+      include ::Chef::Mixin::ShellOut
       include ::Elasticsearch::Helpers
 
       def action_install
@@ -23,7 +25,7 @@ class Chef
           shell   '/usr/bin/false'
         end
 
-        %w(data_dir home_dir log_dir work_dir).each do |dir|
+        %w(data_dir home_dir log_dir plugin_dir work_dir).each do |dir|
           dir = current.send(dir.to_sym)
 
           directory dir do
@@ -70,10 +72,10 @@ class Chef
           backup   false
           variables(
             cluster:        current.cluster,
-            host:           current.listen,
+            host:           address,
             http:           current.http,
             http_port:      current.http_port,
-            members:        cluster_members,
+            members:        members,
             marvel:         current.marvel,
             mlockall:       current.mlockall,
             modules:        current.modules,
@@ -83,6 +85,7 @@ class Chef
             type:           current.type,
             unicast:        current.unicast
           )
+          notifies :restart, "service[#{node[:elasticsearch][:service]}]"
         end
 
         template current.log_config do
@@ -95,6 +98,7 @@ class Chef
             log_file:  current.log_file,
             log_level: current.log_level
           )
+          notifies :restart, "service[#{node[:elasticsearch][:service]}]"
         end
 
         directory ::File.dirname(current.pid_file) do
@@ -116,6 +120,7 @@ class Chef
         current.data_dir       new_resource.data_dir
         current.home_dir       new_resource.home_dir
         current.log_dir        new_resource.log_dir
+        current.plugin_dir     new_resource.plugin_dir
         current.work_dir       new_resource.work_dir
         current.cluster        new_resource.cluster
         current.checksum       new_resource.checksum
@@ -124,11 +129,11 @@ class Chef
         current.group          new_resource.group
         current.http           new_resource.http
         current.http_port      new_resource.http_port
+        current.interface      new_resource.interface
         current.java_heap      new_resource.java_heap
         current.java_home      new_resource.java_home
         current.java_version   new_resource.java_version
         current.java_stack     new_resource.java_stack
-        current.listen         new_resource.listen
         current.log_config     new_resource.log_config
         current.log_file       new_resource.log_file
         current.log_level      new_resource.log_level
