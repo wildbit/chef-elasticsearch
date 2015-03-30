@@ -2,34 +2,50 @@ require 'chef/search/query'
 
 module Elasticsearch
   module Helpers
-    # Returns a Hash of cluster members
-    # @returns [Array] Hash of cluster members, keyed by type.
-    def cluster_members
-      return [] if Chef::Config[:solo]
+    def members
+      return new_resource.members if new_resource.members
+
       output = {}
-      port   = current.transport_port
-      query  = Chef::Search::Query.new
+      query  = "chef_environment:#{node.chef_environment} AND elasticsearch_cluster:#{current.cluster}"
+      all    = ::Chef::Search::Query.new.search(:node, query).first
 
-      crit   = "chef_environment:#{node.chef_environment} AND elasticsearch_cluster:#{current.cluster}"
-      result = query.search(:node, crit).first
-
-      # Marvel members
-      output[:marvel] = result.select do |member|
-        member[:elasticsearch][:type] == 'marvel'
+      %w(client data master marvel).each do |type|
+        output[type.to_sym] = all.select do |member|
+          member[:elasticsearch][:type].match(/type/i)
+        end
       end
 
-      # Data members
-      output[:data] = result.select do |member|
-        member[:elasticsearch][:type] == 'data'
+      # include self on initial search
+      unless output[current.type.to_sym].map(&:name).include?(node.name)
+        output[current.type.to_sym] << node
       end
 
-      output[:data].map!   { |member| "#{member[:ipaddress]}:#{port}" }.sort!
-      output[:marvel].map! { |member| "#{member[:ipaddress]}:#{port}" }.sort!
-
-      output
+      output.each do |type, members|
+        members.map! do |member|
+          ip   = address_for_member(member)
+          port = current.transport_port
+          "#{ip}:#{port}"
+        end
+      end
     end
 
-    # Decompress installation archive
+    # Returns address associated with given interface.
+    # @return [String] IP address of provided interface.
+    def address
+      node.network.interfaces[current.interface].addresses.select do |_, conf|
+        conf[:family] == 'inet'
+      end.keys.first
+    end
+
+    def address_for_member(member)
+      return member[:ipaddress] if member.fetch('elasticsearch', nil).nil?
+
+      interface = member[:elasticsearch][:interface]
+      member.network.interfaces[interface].addresses.select do |_, conf|
+        conf[:family] == 'inet'
+      end.keys.first
+    end
+
     # @return [String] Command used to extract installation
     def cmd_decompress
       "tar -C #{current.home_dir} -xf #{installer_target} --strip-components 1"
@@ -78,7 +94,7 @@ module Elasticsearch
 
       case node[:platform_family]
         when 'rhel'    then "java-#{version}-openjdk-headless"
-        when 'smartos' then "openjdk#{version.split('.')[1]}-#{version}"
+        when 'smartos' then "openjdk#{version.split('.')[1]}"
       end
     end
 
@@ -96,7 +112,7 @@ module Elasticsearch
     # Returns a boolean describing the manifest state
     # @return [FalseClass, TrueClass] Manifest state
     def manifest_exists?
-      response = shell_out("/usr/sbin/svcs -l elasticsearch")
+      response = shell_out("/usr/bin/svcs -a elasticsearch", returns: '0,1')
       response.exitstatus > 0 ? false : true
     end
 
