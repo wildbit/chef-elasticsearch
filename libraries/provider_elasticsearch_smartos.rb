@@ -18,7 +18,7 @@ class Chef
 
         def action_install
           super
-          
+
           # SmartOS resource management project
           resource_control_project 'elastic' do
             comment        'Elasticsearch Service'
@@ -35,6 +35,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
+            cookbook 'elasticsearch_lwrp'
             source   'service.erb'
             backup   false
             variables(
@@ -80,4 +81,3 @@ class Chef
     end
   end
 end
-
