@@ -52,7 +52,7 @@ discovery.zen.ping.unicast.hosts: <%= @members[:data] %>
 
 <% if @marvel -%>
 #################################### Marvel ###################################
-<% if @type == 'monitor' %>
+<% if @type == 'marvel' %>
 marvel.agent.enabled: false
 <% elsif @type.match(/(all|client|data|master)/) && ! @members[:marvel].empty? %>
 marvel.agent.exporter.es.hosts: <%= @members[:marvel] %>

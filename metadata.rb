@@ -3,7 +3,7 @@ description      'Install & configure Elasticsearch'
 license          'Apache 2.0'
 maintainer       'Wildbit LLC'
 maintainer_email 'sys-team@wildbit.com'
-version          '0.1.142'
+version          '0.1.143'
 
 %w(resource-control).each do |dep|
   depends dep
