@@ -17,7 +17,7 @@ default[:elasticsearch][:type]             = 'data'
 default[:elasticsearch][:unicast]          = true
 default[:elasticsearch][:user][:name]      = 'elasticsearch'
 default[:elasticsearch][:user][:uid]       = '700'
-default[:elasticsearch][:version]          = '1.4.4'
+default[:elasticsearch][:version]          = '1.5.0'
 
 case node[:platform_family]
 when 'rhel'
