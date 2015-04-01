@@ -9,5 +9,6 @@ default[:elasticsearch][:modules] = {
   'index.refresh_interval'                        => '5s',
   'index.translog.flush_threshold_period'         => '5s',
   'indices.memory.index_buffer_size'              => '15%',
+  'script.disable_dynamic'                        => false,
   'transport.tcp.connect_timeout'                 => '90s'
 }
