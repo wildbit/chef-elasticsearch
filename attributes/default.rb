@@ -1,4 +1,4 @@
-default[:elasticsearch][:checksum]         = 'a3158d474e68520664debaea304be22327fc7ee1f410e0bfd940747b413e8586'
+default[:elasticsearch][:checksum]         = 'acf572c606552bc446cceef3f8e93814a363ba0d215b323a2864682b3abfbe45'
 default[:elasticsearch][:cluster]          = 'example'
 default[:elasticsearch][:group][:name]     = 'elasticsearch'
 default[:elasticsearch][:group][:gid]      = '700'
