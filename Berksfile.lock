@@ -4,6 +4,6 @@ DEPENDENCIES
     metadata: true
 
 GRAPH
-  elasticsearch_lwrp (0.1.144)
+  elasticsearch_lwrp (0.1.145)
     resource-control (>= 0.0.0)
   resource-control (0.1.1)

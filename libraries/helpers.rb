@@ -6,7 +6,9 @@ module Elasticsearch
       return new_resource.members if !new_resource.members.nil?
 
       output = {}
-      query  = "chef_environment:#{node.chef_environment} AND elasticsearch_cluster:#{current.cluster}"
+      query  = "chef_environment:#{node.chef_environment} "
+      query << "AND (elasticsearch_cluster:#{current.cluster} "
+      query << "OR elasticsearch_cluster_name:#{current.cluster})"
       all    = ::Chef::Search::Query.new.search(:node, query).first
 
       %w(all client data master marvel).each do |type|
@@ -27,6 +29,8 @@ module Elasticsearch
           "#{ip}:#{port}"
         end
       end
+
+      output
     end
 
     # Returns address associated with given interface.
