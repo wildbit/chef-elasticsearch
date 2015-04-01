@@ -24,7 +24,7 @@ module Elasticsearch
 
       output.each do |type, members|
         members.map! do |member|
-          legacy = member[:elasticsearch].fetch('port', nil).nil ? false : true
+          legacy = member[:elasticsearch].fetch('port', nil).nil? ? false : true
 
           ip   = address_for_member(member)
           port = if legacy
