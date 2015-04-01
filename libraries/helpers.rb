@@ -4,13 +4,13 @@ module Elasticsearch
   module Helpers
     def members
       return new_resource.members if !new_resource.members.nil?
-
       output = {}
+
       query  = "chef_environment:#{node.chef_environment} "
       query << "AND (elasticsearch_cluster:#{current.cluster} "
       query << "OR elasticsearch_cluster_name:#{current.cluster})"
-      all    = ::Chef::Search::Query.new.search(:node, query).first
 
+      all    = ::Chef::Search::Query.new.search(:node, query).first
       %w(all client data master marvel).each do |type|
         output[type.to_sym] = all.select do |member|
           member[:elasticsearch][:type].match(/type/i)
@@ -24,8 +24,15 @@ module Elasticsearch
 
       output.each do |type, members|
         members.map! do |member|
+          legacy = member[:elasticsearch].fetch('port').nil ? false : true
+
           ip   = address_for_member(member)
-          port = current.transport_port
+          port = if legacy
+            member[:elasticsearch][:module][:transport][:tcp][:port].split('-').first
+          else
+            member[:elasticsearch][:port][:transport]
+          end
+
           "#{ip}:#{port}"
         end
       end
