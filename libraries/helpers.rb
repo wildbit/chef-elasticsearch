@@ -6,38 +6,45 @@ module Elasticsearch
       return new_resource.members if !new_resource.members.nil?
       output = {}
 
+      # Search criteria
       query  = "chef_environment:#{node.chef_environment} "
       query << "AND (elasticsearch_cluster:#{current.cluster} "
       query << "OR elasticsearch_cluster_name:#{current.cluster})"
 
-      all    = ::Chef::Search::Query.new.search(:node, query).first
+      all_members = ::Chef::Search::Query.new.search(:node, query).first
+
+      # Classify each member
       %w(all client data master marvel).each do |type|
-        output[type.to_sym] = all.select do |member|
-          member[:elasticsearch][:type].match(/type/i)
+        output[type.to_sym] = all_members.select do |member|
+          member[:elasticsearch][:type] == type
         end
       end
 
-      # include self on initial search
+      # Append self to classified members list
       unless output[current.type.to_sym].map(&:name).include?(node.name)
         output[current.type.to_sym] << node
       end
 
-      output.each do |type, members|
-        members.map! do |member|
-          legacy = member[:elasticsearch].fetch('port', nil).nil?
-
-          ip   = address_for_member(member)
-          port = if legacy
-            member[:elasticsearch][:module][:transport][:tcp][:port].split('-').first
-          else
-            member[:elasticsearch][:port][:transport]
-          end
+      output.each do |type, hosts|
+        hosts.map! do |host|
+          ip   = member_address(host)
+          port = member_transport_port(host)
 
           "#{ip}:#{port}"
         end
       end
-
       output
+    end
+
+    # Returns the given members transport port
+    def member_transport_port(member)
+      legacy = member[:elasticsearch].fetch('port', nil).nil?
+
+      if legacy
+        member[:elasticsearch][:module][:transport][:tcp][:port].split('-').first
+      else
+        member[:elasticsearch][:port][:transport]
+      end
     end
 
     # Returns address associated with given interface.
@@ -48,8 +55,9 @@ module Elasticsearch
       end.keys.first
     end
 
-    def address_for_member(member)
-      return member[:ipaddress] if member.fetch('elasticsearch', nil).nil?
+    # Returns
+    def member_address(member)
+      return member[:ipaddress] if member[:elasticsearch].fetch('interface', nil).nil?
 
       interface = member[:elasticsearch][:interface]
       member.network.interfaces[interface].addresses.select do |_, conf|
