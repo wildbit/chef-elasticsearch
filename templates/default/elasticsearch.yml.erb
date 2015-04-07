@@ -1,7 +1,7 @@
 ################################### Cluster ###################################
 
 # cluster name identifies your cluster for auto-discovery
-cluster.name: <%= @cluster %>
+cluster.name: <%= @cluster << '_marvel' if @type == 'marvel' %>
 
 
 #################################### Node #####################################
