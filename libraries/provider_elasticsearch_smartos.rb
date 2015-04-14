@@ -4,6 +4,8 @@ class Chef
   class Provider
     class Elasticsearch
       class Smartos < Chef::Provider::Elasticsearch
+        include ::Elasticsearch::Helpers
+
         # Class path
         # @return [String] Class path
         def class_dir
