@@ -23,7 +23,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
-            cookbook 'elasticsearch_lwrp'
+            cookbook 'elasticsearch'
             source   'sysctl.conf.erb'
             backup   false
             variables(
@@ -44,7 +44,7 @@ class Chef
             group    'root'
             mode     '0644'
             source   'memlock.conf.erb'
-            cookbook 'elasticsearch_lwrp'
+            cookbook 'elasticsearch'
             backup   false
             variables(
               limit: current.resources[:memory][:lock],
@@ -57,7 +57,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
-            cookbook 'elasticsearch_lwrp'
+            cookbook 'elasticsearch'
             source   'service.options.erb'
             backup   false
             variables(
@@ -81,7 +81,7 @@ class Chef
             owner     'root'
             group     'root'
             mode      '0755'
-            cookbook  'elasticsearch_lwrp'
+            cookbook  'elasticsearch'
             source    'service.erb'
             backup    false
             variables(

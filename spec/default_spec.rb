@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 
-describe 'elasticsearch_lwrp::default' do
+describe 'elasticsearch::default' do
   let(:chef_run) do
     ChefSpec::ServerRunner.new(step_into: ['elasticsearch']) do |node|
       node.set[:elasticsearch][:interface] = 'eth0'

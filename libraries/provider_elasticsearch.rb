@@ -68,7 +68,7 @@ class Chef
           owner    'root'
           group    'root'
           mode     '0644'
-          cookbook 'elasticsearch_lwrp'
+          cookbook 'elasticsearch'
           backup   false
           variables(
             cluster:        current.cluster,
@@ -92,7 +92,7 @@ class Chef
           owner    current.user
           group    current.group
           mode     '0644'
-          cookbook 'elasticsearch_lwrp'
+          cookbook 'elasticsearch'
           backup   false
           variables(
             log_file:  current.log_file,
@@ -108,7 +108,6 @@ class Chef
           recursive true
         end
 
-        # Marvel plugin
         elasticsearch_plugin 'elasticsearch/marvel/latest' do
           plugin_binary ::File.join(current.home_dir, 'bin/plugin')
           only_if       { current.marvel }

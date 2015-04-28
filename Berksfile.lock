@@ -1,9 +1,9 @@
 DEPENDENCIES
-  elasticsearch_lwrp
+  elasticsearch
     path: .
     metadata: true
 
 GRAPH
-  elasticsearch_lwrp (0.1.158)
+  elasticsearch (0.1.160)
     resource-control (>= 0.0.0)
   resource-control (0.1.1)

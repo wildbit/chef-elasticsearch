@@ -37,7 +37,7 @@ class Chef
             owner    'root'
             group    'root'
             mode     '0644'
-            cookbook 'elasticsearch_lwrp'
+            cookbook 'elasticsearch'
             source   'service.erb'
             backup   false
             variables(

@@ -13,7 +13,7 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[elasticsearch_lwrp::default]
+      - recipe[elasticsearch]
     attributes:
       elasticsearch:
         interface: 'eth0'
