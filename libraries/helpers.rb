@@ -56,7 +56,11 @@ module Elasticsearch
     end
 
     def cluster
-      new_resource.marvel ? "#{current.cluster}_marvel" : current.cluster
+      if new_resource.marvel && current.type  != 'all'
+        "#{current.cluster}_marvel"
+      else
+        current.cluster
+      end
     end
 
     def member_address(member)
