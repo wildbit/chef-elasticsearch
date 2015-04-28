@@ -56,7 +56,7 @@ module Elasticsearch
     end
 
     def cluster
-      if new_resource.marvel && current.type  != 'all'
+      if new_resource.marvel && current.type == 'monitor'
         "#{current.cluster}_marvel"
       else
         current.cluster
