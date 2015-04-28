@@ -36,7 +36,7 @@ when 'smartos'
   default[:elasticsearch][:interface]      = 'net1'
   default[:elasticsearch][:file][:pid]     = '/var/tmp/elasticsearch/elasticsearch.pid'
   default[:elasticsearch][:java][:version] = '1.7.6'
-  default[:elasticsearch][:java][:home]    = "/opt/local/java/openjdk#{node[:elasticsearch][:java][:version]}"
+  default[:elasticsearch][:java][:home]    = "/opt/local/java/openjdk#{node[:elasticsearch][:java][:version].split('.')[1]}"
   default[:elasticsearch][:resources]      = {
     files:  { open: '40000' }
   }
