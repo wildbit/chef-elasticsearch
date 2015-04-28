@@ -55,7 +55,10 @@ module Elasticsearch
       end.keys.first
     end
 
-    # Returns
+    def cluster
+      new_resource.marvel ? "#{current.cluster}_marvel" : current.cluster
+    end
+
     def member_address(member)
       return member[:ipaddress] if member[:elasticsearch].fetch('interface', nil).nil?
 

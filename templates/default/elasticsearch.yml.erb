@@ -1,7 +1,7 @@
 ################################### Cluster ###################################
 
 # cluster name identifies your cluster for auto-discovery
-cluster.name: <%= @cluster << '_marvel' if @type == 'marvel' %>
+cluster.name: <%= @cluster %>
 
 
 #################################### Node #####################################
@@ -64,4 +64,3 @@ marvel.agent.exporter.es.hosts: <%= @members[:marvel] %>
 <% @modules.each do |name, value| -%>
 <%= name %>: <%= value %>
 <% end -%>
-

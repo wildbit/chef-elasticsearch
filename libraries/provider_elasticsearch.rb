@@ -71,7 +71,7 @@ class Chef
           cookbook 'elasticsearch'
           backup   false
           variables(
-            cluster:        current.cluster,
+            cluster:        cluster,
             host:           address,
             http:           current.http,
             http_port:      current.http_port,
