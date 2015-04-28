@@ -1,10 +1,9 @@
-default[:elasticsearch][:checksum]         = 'acf572c606552bc446cceef3f8e93814a363ba0d215b323a2864682b3abfbe45'
+default[:elasticsearch][:checksum]         = 'ffe2e46ec88f4455323112a556adaaa085669d13'
 default[:elasticsearch][:cluster]          = 'example'
 default[:elasticsearch][:group][:name]     = 'elasticsearch'
 default[:elasticsearch][:group][:gid]      = '700'
 default[:elasticsearch][:http]             = true
 default[:elasticsearch][:java][:stack]     = '256k'
-default[:elasticsearch][:java][:version]   = '8'
 default[:elasticsearch][:marvel]           = false
 default[:elasticsearch][:multicast]        = false
 default[:elasticsearch][:members]          = nil
@@ -17,7 +16,7 @@ default[:elasticsearch][:type]             = 'data'
 default[:elasticsearch][:unicast]          = true
 default[:elasticsearch][:user][:name]      = 'elasticsearch'
 default[:elasticsearch][:user][:uid]       = '700'
-default[:elasticsearch][:version]          = '1.5.0'
+default[:elasticsearch][:version]          = '1.5.2'
 
 case node[:platform_family]
 when 'rhel'
