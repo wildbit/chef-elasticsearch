@@ -112,8 +112,8 @@ module Elasticsearch
       version = current.java_version
 
       case node[:platform_family]
-      when 'rhel'    then "java-#{java_version}-openjdk-headless"
-      when 'smartos' then "openjdk#{java_version.split('.')[1]}"
+      when 'rhel'    then "java-#{current.java_version}-openjdk-headless"
+      when 'smartos' then "openjdk#{current.java_version.split('.')[1]}"
       end
     end
 
