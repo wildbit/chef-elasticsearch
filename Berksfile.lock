@@ -2,8 +2,9 @@ DEPENDENCIES
   elasticsearch
     path: .
     metadata: true
+  resource-control (~> 0.1.1)
 
 GRAPH
-  elasticsearch (0.1.160)
+  elasticsearch (0.1.161)
     resource-control (>= 0.0.0)
   resource-control (0.1.1)
