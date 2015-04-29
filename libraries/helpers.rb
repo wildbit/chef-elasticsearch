@@ -14,7 +14,7 @@ module Elasticsearch
       all_members = ::Chef::Search::Query.new.search(:node, query).first
 
       # Classify each member
-      %w(all client data master marvel).each do |type|
+      %w(all client data master monitor).each do |type|
         output[type.to_sym] = all_members.select do |member|
           member[:elasticsearch][:type] == type
         end
