@@ -10,10 +10,10 @@ cluster.name: <%= @cluster %>
 node.name: <%= @name %>
 
 # allow node to be master
-node.master: <%= @type.match(/(all|data|marvel|master)/) ? true : false %>
+node.master: <%= @type.match(/(all|data|monitor|master)/) ? true : false %>
 
 # allow node to store data
-node.data: <%= @type.match(/(all|data|marvel|master)/) ? true : false %>
+node.data: <%= @type.match(/(all|data|monitor|master)/) ? true : false %>
 
 
 ############################## HTTP ###########################################
@@ -52,10 +52,10 @@ discovery.zen.ping.unicast.hosts: <%= @members[:data] %>
 
 <% if @marvel -%>
 #################################### Marvel ###################################
-<% if @type == 'marvel' %>
+<% if @type == 'monitor' %>
 marvel.agent.enabled: false
-<% elsif @type.match(/(all|client|data|master)/) && ! @members[:marvel].empty? %>
-marvel.agent.exporter.es.hosts: <%= @members[:marvel] %>
+<% elsif @type.match(/(all|data|master)/) && ! @members[:monitor].empty? %>
+marvel.agent.exporter.es.hosts: <%= @members[:monitor] %>
 <% end -%>
 <% end -%>
 
