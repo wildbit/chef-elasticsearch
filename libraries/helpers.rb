@@ -31,7 +31,7 @@ module Elasticsearch
           port = member_transport_port(host)
 
           "#{ip}:#{port}"
-        end
+        end.sort!
       end
       output
     end
