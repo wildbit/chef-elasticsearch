@@ -72,7 +72,7 @@ class Chef
           backup   false
           variables(
             cluster:        cluster,
-            host:           address,
+            host:           network_host_address,
             http:           current.http,
             http_port:      current.http_port,
             members:        members,
@@ -81,6 +81,7 @@ class Chef
             modules:        current.modules,
             multicast:      current.multicast,
             name:           node.name,
+            transport_host: network_transport_address,
             transport_port: current.transport_port,
             type:           current.type,
             unicast:        current.unicast
@@ -116,41 +117,42 @@ class Chef
 
       def load_current_resource
         @current = Chef::Resource::Elasticsearch.new(new_resource.name)
-        current.data_dir       new_resource.data_dir
-        current.home_dir       new_resource.home_dir
-        current.log_dir        new_resource.log_dir
-        current.plugin_dir     new_resource.plugin_dir
-        current.work_dir       new_resource.work_dir
-        current.cluster        new_resource.cluster
-        current.checksum       new_resource.checksum
-        current.config_file    new_resource.config_file
-        current.gid            new_resource.gid
-        current.group          new_resource.group
-        current.http           new_resource.http
-        current.http_port      new_resource.http_port
-        current.interface      new_resource.interface
-        current.java_heap      new_resource.java_heap
-        current.java_home      new_resource.java_home
-        current.java_version   new_resource.java_version
-        current.java_stack     new_resource.java_stack
-        current.log_config     new_resource.log_config
-        current.log_file       new_resource.log_file
-        current.log_level      new_resource.log_level
-        current.marvel         new_resource.marvel
-        current.mlockall       new_resource.mlockall
-        current.members        new_resource.members
-        current.modules        new_resource.modules
-        current.multicast      new_resource.multicast
-        current.pid_file       new_resource.pid_file
-        current.resources      new_resource.resources
-        current.service_name   new_resource.service_name
-        current.source         new_resource.source
-        current.transport_port new_resource.transport_port
-        current.type           new_resource.type
-        current.user           new_resource.user
-        current.uid            new_resource.uid
-        current.unicast        new_resource.unicast
-        current.version        new_resource.version
+        current.data_dir            new_resource.data_dir
+        current.home_dir            new_resource.home_dir
+        current.log_dir             new_resource.log_dir
+        current.plugin_dir          new_resource.plugin_dir
+        current.work_dir            new_resource.work_dir
+        current.cluster             new_resource.cluster
+        current.checksum            new_resource.checksum
+        current.config_file         new_resource.config_file
+        current.gid                 new_resource.gid
+        current.group               new_resource.group
+        current.http                new_resource.http
+        current.http_port           new_resource.http_port
+        current.java_heap           new_resource.java_heap
+        current.java_home           new_resource.java_home
+        current.java_version        new_resource.java_version
+        current.java_stack          new_resource.java_stack
+        current.log_config          new_resource.log_config
+        current.log_file            new_resource.log_file
+        current.log_level           new_resource.log_level
+        current.marvel              new_resource.marvel
+        current.mlockall            new_resource.mlockall
+        current.members             new_resource.members
+        current.modules             new_resource.modules
+        current.multicast           new_resource.multicast
+        current.network_interface   new_resource.network_interface
+        current.pid_file            new_resource.pid_file
+        current.resources           new_resource.resources
+        current.service_name        new_resource.service_name
+        current.source              new_resource.source
+        current.transport_interface new_resource.transport_interface
+        current.transport_port      new_resource.transport_port
+        current.type                new_resource.type
+        current.user                new_resource.user
+        current.uid                 new_resource.uid
+        current.unicast             new_resource.unicast
+        current.version             new_resource.version
 
         current
       end

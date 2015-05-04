@@ -131,14 +131,6 @@ class Chef
         )
       end
 
-      def interface(arg = nil)
-        set_or_return(
-          :interface,
-          arg,
-          default: lazy { node[:elasticsearch][:interface] }
-        )
-      end
-
       def log_level(arg = nil)
         set_or_return(
           :log_level,
@@ -187,6 +179,14 @@ class Chef
         )
       end
 
+      def network_interface(arg = nil)
+        set_or_return(
+          :network_interface,
+          arg,
+          default: lazy { node[:elasticsearch][:iface][:network] }
+        )
+      end
+
       def pid_file(arg = nil)
         set_or_return(
           :pid_file,
@@ -224,6 +224,14 @@ class Chef
           :source,
           arg,
           default: lazy { node[:elasticsearch][:source] }
+        )
+      end
+
+      def transport_interface(arg = nil)
+        set_or_return(
+          :transport_interface,
+          arg,
+          default: lazy { node[:elasticsearch][:iface][:transport] }
         )
       end
 

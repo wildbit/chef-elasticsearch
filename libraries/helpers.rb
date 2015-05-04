@@ -2,6 +2,40 @@ require 'chef/search/query'
 
 module Elasticsearch
   module Helpers
+    def network_host_address
+      begin
+        iface = node[:elasticsearch][:iface][:network]
+        conf  = node[:network][:interfaces][iface].addresses.select do |_, conf|
+          conf[:family] == 'inet'
+        end
+        conf.keys.first
+      rescue NoMethodError
+        node[:ipaddress]
+      end
+    end
+
+    def network_transport_address
+      begin
+        iface = node[:elasticsearch][:iface][:transport]
+        conf  = node[:network][:interfaces][iface].addresses.select do |_, conf|
+          conf[:family] == 'inet'
+        end
+        conf.keys.first
+      rescue NoMethodError
+        node[:ipaddress]
+      end
+    end
+
+    def cluster
+      if new_resource.marvel && current.type == 'monitor'
+        "#{current.cluster}_marvel"
+      else
+        current.cluster
+      end
+    end
+
+    # Returns Hash keyed by member type containing members of keyed type.
+    # @return [Hash] Members of all types
     def members
       return new_resource.members if !new_resource.members.nil?
       output = {}
@@ -13,22 +47,25 @@ module Elasticsearch
 
       all_members = ::Chef::Search::Query.new.search(:node, query).first
 
-      # Classify each member
       %w(all client data master monitor).each do |type|
         output[type.to_sym] = all_members.select do |member|
-          member[:elasticsearch][:type] == type
+          if type == 'client'
+            member[:elasticsearch][:type] == 'data'
+          else
+            member[:elasticsearch][:type] == type
+          end
         end
       end
 
       # Append self to classified members list
-      unless output[current.type.to_sym].map(&:name).include?(node.name)
+      unless output[current.type.to_sym].map(&:name).include?(node.name) && current.type != 'client'
         output[current.type.to_sym] << node
       end
 
       output.each do |type, hosts|
         hosts.map! do |host|
-          ip   = member_address(host)
-          port = member_transport_port(host)
+          ip   = transport_address(host)
+          port = transport_port(host)
 
           "#{ip}:#{port}"
         end.sort!
@@ -36,8 +73,22 @@ module Elasticsearch
       output
     end
 
+    # Returns IP address used for inter-node communication.
+    # @return [String] Transport IP address
+    def transport_address(member)
+      begin
+        iface = member[:elasticsearch][:iface][:transport]
+        conf  = member[:network][:interfaces][iface].addresses.select do |_, conf|
+          conf[:family] == 'inet'
+        end
+        conf.keys.first
+      rescue NoMethodError
+        member[:ipaddress]
+      end
+    end
+
     # Returns the given members transport port
-    def member_transport_port(member)
+    def transport_port(member)
       legacy = member[:elasticsearch].fetch('port', nil).nil?
 
       if legacy
@@ -45,31 +96,6 @@ module Elasticsearch
       else
         member[:elasticsearch][:port][:transport]
       end
-    end
-
-    # Returns address associated with given interface.
-    # @return [String] IP address of provided interface.
-    def address
-      node.network.interfaces[current.interface].addresses.select do |_, conf|
-        conf[:family] == 'inet'
-      end.keys.first
-    end
-
-    def cluster
-      if new_resource.marvel && current.type == 'monitor'
-        "#{current.cluster}_marvel"
-      else
-        current.cluster
-      end
-    end
-
-    def member_address(member)
-      return member[:ipaddress] if member[:elasticsearch].fetch('interface', nil).nil?
-
-      interface = member[:elasticsearch][:interface]
-      member.network.interfaces[interface].addresses.select do |_, conf|
-        conf[:family] == 'inet'
-      end.keys.first
     end
 
     # @return [String] Command used to extract installation
