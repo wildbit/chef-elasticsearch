@@ -65,7 +65,7 @@ module Elasticsearch
       output.each do |type, hosts|
         hosts.map! do |host|
           ip   = transport_address(host)
-          port = transport_port(host)
+          port = type == 'monitor' ? current.http_port : transport_port(host)
 
           "#{ip}:#{port}"
         end.sort!
