@@ -32,7 +32,7 @@ when 'rhel'
     memory: { lock: 'unlimited', map: '262144' }
   }
 when 'smartos'
-  default[:elasticsearch][:dir][:data]        = '/var/db/elasticsearch'
+  default[:elasticsearch][:dir][:data]        = '/var/lib/elasticsearch'
   default[:elasticsearch][:dir][:home]        = '/opt/local/elasticsearch'
   default[:elasticsearch][:iface][:network]   = 'net0'
   default[:elasticsearch][:iface][:transport] = 'net1'
