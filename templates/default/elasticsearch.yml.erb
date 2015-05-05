@@ -10,7 +10,7 @@ cluster.name: <%= @cluster %>
 node.name: <%= @name %>
 
 # allow node to be master
-node.master: <%= @type.match(/(all|data|monitor|master)/) ? true : false %>
+node.master: <%= @type.match(/(all|client|monitor|master)/) ? true : false %>
 
 # allow node to store data
 node.data: <%= @type.match(/(all|data|monitor|master)/) ? true : false %>
