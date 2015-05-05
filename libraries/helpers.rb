@@ -64,17 +64,14 @@ module Elasticsearch
 
       output.each do |type, hosts|
         hosts.map! do |host|
-          if type.to_s.match('monitor')
-            ip   = host[:ipaddress]
-            port = current.http_port
-          else
-            ip   = transport_address(host)
-            port = transport_port(host)
-          end
+          ip   = transport_address(host)
+          port = transport_port(host)
 
           "#{ip}:#{port}"
         end.sort!
       end
+      output[:marvel].each { |host| host.gsub!(/\:9300/, '9200') }
+      
       output
     end
 
