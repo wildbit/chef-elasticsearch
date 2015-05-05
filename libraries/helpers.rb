@@ -16,7 +16,7 @@ module Elasticsearch
 
     def network_transport_address
       begin
-        iface = node[:elasticsearch][:iface][:transport]
+        iface = node[:elasticsearch][:iface][:network]
         conf  = node[:network][:interfaces][iface].addresses.select do |_, conf|
           conf[:family] == 'inet'
         end
@@ -64,8 +64,13 @@ module Elasticsearch
 
       output.each do |type, hosts|
         hosts.map! do |host|
-          ip   = transport_address(host)
-          port = type == 'monitor' ? current.http_port : transport_port(host)
+          if type.to_s.match('monitor')
+            ip   = host[:ipaddress]
+            port = current.http_port
+          else
+            ip   = transport_address(host)
+            port = type == 'monitor' ? current.http_port : transport_port(host)
+          end
 
           "#{ip}:#{port}"
         end.sort!
