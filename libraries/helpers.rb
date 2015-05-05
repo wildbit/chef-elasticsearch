@@ -69,7 +69,7 @@ module Elasticsearch
             port = current.http_port
           else
             ip   = transport_address(host)
-            port = type == 'monitor' ? current.http_port : transport_port(host)
+            port = transport_port(host)
           end
 
           "#{ip}:#{port}"

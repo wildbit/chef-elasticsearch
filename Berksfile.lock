@@ -5,6 +5,6 @@ DEPENDENCIES
   resource-control (~> 0.1.1)
 
 GRAPH
-  elasticsearch (0.1.181)
+  elasticsearch (0.1.182)
     resource-control (>= 0.0.0)
   resource-control (0.1.1)
