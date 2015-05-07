@@ -5,7 +5,7 @@ module Elasticsearch
     def network_host_address
       begin
         iface = node[:elasticsearch][:iface][:network]
-        conf  = node[:network][:interfaces][iface].addresses.select do |_, conf|
+        conf  = node[:network][:interfaces][iface][:addresses].select do |_, conf|
           conf[:family] == 'inet'
         end
         conf.keys.first
@@ -17,13 +17,13 @@ module Elasticsearch
     def network_transport_address
       begin
         iface = node[:elasticsearch][:iface][:network]
-        conf  = node[:network][:interfaces][iface].addresses.select do |_, conf|
+        conf  = node[:network][:interfaces][iface][:addresses].select do |_, conf|
           conf[:family] == 'inet'
         end
         conf.keys.first
       rescue NoMethodError
         node[:ipaddress]
-      end
+     end
     end
 
     def cluster
@@ -64,14 +64,17 @@ module Elasticsearch
 
       output.each do |type, hosts|
         hosts.map! do |host|
-          ip   = transport_address(host)
-          port = transport_port(host)
+          if type.to_s.match('monitor')
+            ip   = host[:ipaddress]
+            port = current.http_port
+          else
+            ip   = transport_address(host)
+            port = transport_port(host)
+          end
 
           "#{ip}:#{port}"
         end.sort!
       end
-      output[:marvel].each { |host| host.gsub!(/\:9300/, '9200') }
-      
       output
     end
 
@@ -80,13 +83,13 @@ module Elasticsearch
     def transport_address(member)
       begin
         iface = member[:elasticsearch][:iface][:transport]
-        conf  = member[:network][:interfaces][iface].addresses.select do |_, conf|
+        conf  = member[:network][:interfaces][iface][:addresses].select do |_, conf|
           conf[:family] == 'inet'
         end
         conf.keys.first
       rescue NoMethodError
         member[:ipaddress]
-      end
+     end
     end
 
     # Returns the given members transport port
