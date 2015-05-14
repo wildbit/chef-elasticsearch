@@ -15,5 +15,3 @@ suites:
     run_list:
       - recipe[elasticsearch]
     attributes:
-      elasticsearch:
-        interface: 'eth0'
