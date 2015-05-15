@@ -1,258 +1,85 @@
-#### Elasticsearch
+### Elasticsearch
 
-The Elasticsearch cookbook facilitates the installation and configuration of an Elasticsearch instance.
-
-##### Requirements
-
-###### Cookbooks
-
-* java
-* resource-control	
-
-##### Software
-* Chef (>= 0.11.0)
-
-###### Platform
-
-* RHEL
-* SmartOS
-
-##### Resources & Providers
-
-This cookbook includes the following resources and respective providers:
+The Elasticsearch cookbook is a library cookbook that is intended to be included in an application cookbook. Two resource primitives (resources) are provided for use within recipes. 
 
 * elasticsearch
 * elasticsearch_plugin
 
-The ```elasticsearch``` resource/provider facilate the configuration and installation of Elasticsearch. Defaults are provided, however they may be overriden.
+#### Requirements
+----
 
-* Set home directory
- 
-```
-elasticsearch '1.4.2' do
-  home_dir '/opt/elasticsearch-1.4.2'
-end
-```
+##### Cookbooks
 
-* Set user & group
+* [resource-control](https://github.com/wanelo-chef/resource-control)
 
-```
-elasticsearch '1.4.2' do
-  user  'elastic'
-  group 'elastic'
-end
-```
+##### Platforms
 
-* Set logging directory
+* CentOS
+* RHEL 
+* SmartOS
 
-```
-elasticsearch '1.4.2' do
-  log_dir '/opt/local/elasticsearch/logs'
-end
-```
-
-In addtion to ```elasticsearch```, ```elasticsearch_plugin``` is provided, facilitating plugin installation and removal.
-
-* Install Marvel plugin
-
-```
-elasticsearch_plugin 'elasticsearch/marvel/latest'
-```
-
-* Install latest Marvel plugin with different plugin executable
-
-```
-elasticsearch_plugin 'elasticsearch/marvel/latest' do
-  plugin_binary '/usr/local/elasticsearch/bin/plugin'
-end
-```
-
-* Install Marvel plugin with provided version
-
-```
-elasticsearch_plugin 'elasticsearch/marvel/0.1.0'
-```
+#### Resources
+----
+##### elasticsearch
 
 
-##### elasticsearch Attributes
 
-__Directories__
+* ```checksum``` - Installation archive checksum
+* ```cluster``` - Cluster name
+* ```config_file``` - Configuration file location
+* ```data_dir``` - Directory containing data files
+* ```gid``` - GID of group
+* ```group``` Group to run as
+* ```home_dir``` - Installation directory
+* ```http``` - Enable HTTP API
+* ```http_port``` - HTTP API port
+* ```java_heap``` - Java heap size
+* ```java_home``` - Java home
+* ```log_config``` - Log configuration file location
+* ```log_dir``` - Directory containing log files
+* ```log_file``` - Log file
+* ```log_level``` - Log verbosity
+* ```marvel``` - Enable monitoring via Marvel
+* ```mlockall``` - Lock process address space into memory
+* ```members``` - Cluster members
+* ```modules``` - Modules 
+* ```multicast``` - Multicast support
+* ```network_interface``` - Network interface to listen on
+* ```pid_file```- Location of PID file
+* ```plugin_dir``` - Directory containing plugins
+* ```resources``` - Resource contraints
+* ```service_name``` - Name of service
+* ```source``` - URL of installation archive
+* ```transport_interface``` - Interface used for inter-node communication
+* ```transport_port``` - Port used for inter-node communication
+* ```type``` - Operating type of node (all, client, data, master, monitor)
+* ```uid```- UID of user
+* ```unicast``` - Unicast support
+* ```user``` - User to run as
+* ```version``` - Version
+* ```work_dir``` - Working directory
 
-<table>
-<th>Directory</th>
-<th>Description</th>
-<th>Default - RHEL</th>
-<th>Default - SmartOS</th>
-<tr>
-<td>data_dir</td>
-<td>Data directory</td>
-<td>/var/lib/elasticsearch</td>
-<td>/var/db/elasticsearch</td>
-</tr>
-<tr>
-<td>home_dir</td>
-<td>Home directory</td>
-<td>/opt/elasticsearch</td>
-<td>/opt/local/elasticsearch</td>
-</tr>
-<tr>
-<td>log_dir</td>
-<td>Log directory</td>
-<td>/var/log/elasticsearch</td>
-<td>/var/log/elasticsearch</td>
-</tr>
-<td>work_dir</td>
-<td>Working directory</td>
-<td>/tmp/elasticsearch</td>
-<td>/var/tmp/elasticsearch</td>
-</tr>
-</table>
+##### elasticsearch_plugin
 
-__Network__
+* ```plugin_binary``` - Location of plugin executable
+* ```plugin_name``` - Name of plugin
+* ```plugin_version``` - Version of plugi
 
-<table>
-<th>Attribute</th>
-<th>Description</th>
-<th>Default - RHEL</th>
-<th>Default - SmartOS</th>
-<tr>
-<td>http_port</td>
-<td>HTTP Port</td>
-<td>9200</td>
-<td>9200</td>
-</tr>
-<tr>
-<td>transport_port</td>
-<td>Transport port</td>
-<td>9300-9400</td>
-<td>9300-9400</td>
-</tr>
-<tr>
-<td>multicast</td>
-<td>Multicast discovery</td>
-<td>false</td>
-<td>false</td>
-</tr>
-<tr>
-<td>unicast</td>
-<td>Unicast discovery</td>
-<td>true</td>
-<td>true</td>
-</tr>
-</table>
+#### Usage
 
-__Options__
-
-<table>
-<th>Option</th>
-<th>Description</th>
-<th>Default - RHEL</th>
-<th>Default - SmartOS</th>
-<tr>
-<td>cluster</td>
-<td>Cluster name</td>
-<td>development</td>
-<td>development</td>
-</tr>
-<tr>
-<td>log_level</td>
-<td>Logging verbosity</td>
-<td>DEBUG</td>
-<td>DEBUG</td>
-</tr>
-<tr>
-<td>marvel</td>
-<td>Marvel support</td>
-<td>true</td>
-<td>true</td>
-</tr>
-<tr>
-<td>max_locked_memory</td>
-<td>Maximum memory locked</td>
-<td>unlimited</td>
-<td>unlimited</td>
-</tr>
-<tr>
-<td>max_memory_map</td>
-<td>Maximum memory mapped files</td>
-<td>262144</td>
-<td>262144</td>
-</tr>
-<tr>
-<td>max_open_files</td>
-<td>Maximum open files</td>
-<td>65535</td>
-</tr>
-<tr>
-<td>members</td>
-<td>Collection of members</td>
-<td>nil</td>
-<td>nil</td>
-</tr>
-<tr>
-<td>service_name</td>
-<td>Service name</td>
-<td>elasticsearch</td>
-<td>elasticsearch</td>
-</tr>
-<tr>
-<td>shell</td>
-<td>Shell</td>
-<td>/bin/bash</td>
-<td>/usr/bin/bash</td>
-</tr>
-<tr>
-<td>type</td>
-<td>Member type</td>
-<td>data</td>
-<td>data</td>
-</tr>
-<tr>
-<td>version</td>
-<td>Version managed</td>
-<td>1.4.2</td>
-<td>1.4.2</td>
-</table>
-
-__User & Group__
-
-<table>
-<th>Attribute</th>
-<th>Description</th>
-<th>Default - RHEL</th>
-<th>Default - SmartOS</th>
-<tr>
-<td>user</td>
-<td>User to execute process as</td>
-<td>elasticsearch</td>
-<td>elasticsearch</td>
-</tr>
-<tr>
-<td>group</td>
-<td>Group to execute process as</td>
-<td>elasticsearch</td>
-<td>elasticsearch</td>
-</tr>
-<tr>
-<td>uid</td>
-<td>User UID</td>
-<td>700</td>
-<td>700</td>
-</tr>
-<tr>
-<td>gid</td>
-<td>Group GID</td>
-<td>700</td>
-<td>700</td>
-</tr>
-</table>
-
-##### Usage
-
-This cookbook conforms to the application/library convention, as a result it's recommended that this cookbook be augmented with a site-specific cookbook.
-
-However, should the defaults be acceptable to your environment simple include the recipe within the desired node's run list.
+As mentioned above the cookbook is intended to be included within an application cookbook. Should the the defaults to unsuitable they may be overriden.
 
 ```
-$ knife node run_list add 'recipe[elasticsearch]'
+# modify install archive checksum
+set[:elasticsearch][:checksum] = '1122334455'
+
+# modify HTTP port
+set[:elasticsearch][:http_port] = '9400'
+
+# disable marvel
+set[:elasticsearch][:marvel] = false
 ```
+
+##### Member Discovery
+
+Members may be provided through the ```members``` parameter, however it may be useful to autodiscover members. Nodes will be discovered based the Chef environment and cluster name. Currently there is no means to alter search criteria through the resource.
